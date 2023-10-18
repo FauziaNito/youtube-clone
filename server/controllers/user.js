@@ -15,45 +15,51 @@ export const update = async (req, res, next) => {
     return next(createError(403, 'You can only update your account!'));
   }
 };
-export const deleteUser = (req, res, next) => {
+export const deleteUser = async (req, res, next) => {
+    if (req.params.id === req.user.id) {
+        try {
+          await User.findByIdAndDelete(req.params.id)
+          res.status(200).json("User has been deleted");
+        } catch (error) {
+          next(error);
+        }
+      } else {
+        return next(createError(403, 'You can only delete your account!'));
+      }
+};
+export const getUser = async (req, res, next) => {
     try {
-        
+        const user = await User.findById(req.params.id)
+        res.status(200).json(user)
     } catch (error) {
-        
+        next(error)
     }
 };
-export const getUser = (req, res, next) => {
+export const subcribe = async (req, res, next) => {
     try {
         
     } catch (error) {
-        
+        next(error)
     }
 };
-export const subcribe = (req, res, next) => {
+export const unsubcribe = async (req, res, next) => {
     try {
         
     } catch (error) {
-        
+        next(error)
     }
 };
-export const unsubcribe = (req, res, next) => {
+export const like = async (req, res, next) => {
     try {
         
     } catch (error) {
-        
+        next(error)
     }
 };
-export const like = (req, res, next) => {
+export const dislike = async (req, res, next) => {
     try {
         
     } catch (error) {
-        
-    }
-};
-export const dislike = (req, res, next) => {
-    try {
-        
-    } catch (error) {
-        
+        next(error)
     }
 };
