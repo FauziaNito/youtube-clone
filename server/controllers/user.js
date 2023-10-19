@@ -35,14 +35,19 @@ export const getUser = async (req, res, next) => {
         next(error)
     }
 };
-export const subcribe = async (req, res, next) => {
+export const subscribe = async (req, res, next) => {
     try {
-        
+        await User.findById(req.user.id,{
+          $push:{subscribedUsers:req.params.id}
+        })
+        await User.findByIdAndUpdate(req.params.id, {
+          $inc: { subscribers: 1}
+        })
     } catch (error) {
         next(error)
     }
 };
-export const unsubcribe = async (req, res, next) => {
+export const unsubscribe = async (req, res, next) => {
     try {
         
     } catch (error) {
