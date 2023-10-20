@@ -1,5 +1,6 @@
 import { createError } from '../error.js';
 import User from '../models/User.js';
+import Video from '../models/Video.js';
 
 export const update = async (req, res, next) => {
   if (req.params.id === req.user.id) {
@@ -37,21 +38,21 @@ export const getUser = async (req, res, next) => {
 };
 export const subscribe = async (req, res, next) => {
     try {
-        await User.findById(req.user.id,{
-          $push:{subscribedUsers:req.params.id}
+        await User.findByIdAndUpdate(req.user.id,{
+          $push:{subcribedUser:req.params.id}
         })
         await User.findByIdAndUpdate(req.params.id, {
           $inc: { subscribers: 1}
         })
-        res.status(200).json("Subscription successfull)")
+        res.status(200).json("Subscription successfull")
     } catch (error) {
         next(error)
     }
 };
 export const unsubscribe = async (req, res, next) => {
   try {
-    await User.findById(req.user.id,{
-      $pull:{subscribedUsers:req.params.id}
+    await User.findByIdAndUpdate(req.user.id,{
+      $pull:{subcribedUser:req.params.id}
     })
     await User.findByIdAndUpdate(req.params.id, {
       $inc: { subscribers: -1}
@@ -62,16 +63,38 @@ export const unsubscribe = async (req, res, next) => {
 }
 };
 export const like = async (req, res, next) => {
+  const id = req.user.id;
+  const videoId = req.params.videoId;
     try {
-        
+      await Video.findByIdAndUpdate(videoId,{
+        $addToSet:{likes:id},
+        $pull:{dislikes:id}
+      })
+      res.status(200).json("The video has been liked")
     } catch (error) {
         next(error)
     }
 };
 export const dislike = async (req, res, next) => {
+  const id = req.user.id;
+  const videoId = req.params.videoId;
     try {
-        
+      await Video.findByIdAndUpdate(videoId,{
+        $addToSet:{dislikes:id},
+        $pull:{likes:id}
+      })
+      res.status(200).json("The video has been disliked")
     } catch (error) {
         next(error)
     }
+};
+
+// My function to return all users
+export const getAllUser = async (req, res, next) => {
+  try {
+      const allUser = await User.find()
+      res.status(200).json(allUser);
+  } catch (error) {
+      next(error)
+  }
 };
